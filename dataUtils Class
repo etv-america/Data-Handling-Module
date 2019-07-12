@@ -1,0 +1,109 @@
+class dataUtils: #  PROG To-Do List: - add docstrings to methods,
+                    # - replace error string returns with 0 returns and prints
+
+    #  Misc Internal Methods
+
+    #  check if a data set is in order
+    def isordered(self, data):
+        ordered = 1
+        for i in range(1, len(data)):
+            if data[i] < data[i - 1]:
+                ordered = 0
+        return ordered
+
+    #  swaps two arguments given; To-Do: EXPAND/FIT TO SIMPLIFY METHODS
+    def listswap(self, data, fir, sec):
+        if fir < len(data) and sec < len(data):
+            temp = data[fir]
+            data[fir] = data[sec]
+            data[sec] = temp
+        else:
+            print("Swap index out of bounds")
+        return data
+
+    #  Randomizing Methods
+
+    #  create random test data list of arbitrary size
+    def randata(self, length, max, duples=1):
+        import random
+        if duples == 1:
+            randlist = [random.randrange(max) for i in range(length)]
+        elif duples == 0:
+            if length > max:
+                randlist = [0]
+                print("ERROR: cannot have unique distribution longer than range;\n" \
+                      "Can either decrease length or increase max")
+            else:
+                randlist = random.sample(range(0,max), length)
+        return randlist
+
+    #  shuffles a given data set
+    def shuffle(self, data):
+        import random
+        return random.sample(data, len(data))
+
+    # List Sort Methods
+
+    #  selection sorting
+    def selsort(self, data, showstep=0):
+        for cycle in range(len(data)):
+            for i in range(cycle, len(data)):
+                if data[cycle] > data[i]:
+                    data = self.listswap(data, cycle, i)
+                    if showstep == 1:
+                        print(data)
+        return data
+
+    #  insertion sorting
+    def insort(self, data, showstep=0):
+        insorted = []
+        for i in data:
+            insorted.append(i)
+            pos = len(insorted) - 1
+            if showstep == 1:
+                print(insorted)
+            while insorted[pos - 1] > insorted[pos] and pos > 0:
+                insorted = self.listswap(insorted, pos, pos-1)
+                pos -= 1
+                if showstep == 1:
+                    print(insorted)
+        return insorted
+
+    #  bubble sorting
+    def bubblesort(self, data, showstep=0):
+        while 1:
+            ordrd = self.isordered(data)  #  checks data ordering
+            if ordrd == 1:
+                return data
+            else:
+                for i in range(len(data) - 1):
+                    if data[i] > data[i + 1]:
+                        data = self.listswap(data,i,i+1)
+                if showstep == 1:  # Optional printout of sorting steps
+                    print(data)
+
+    # List search methods
+
+    # binary search, DATA MUST BE ORDERED!
+    def binsearch(self, data, target):
+        pos = len(data) + 1
+        if self.isordered(data) == 1:  # check data ordering
+            head, tail = 0, len(data) - 1
+            while pos == len(data) + 1:  # searchbound adjustment logic
+                mid = (head + tail) // 2
+                if data[mid] == target:
+                    pos = mid
+                elif (tail <= head) and (pos == len(data) + 1):
+                    pos = "Not in list"
+                elif data[mid] > target:
+                    tail = mid - 1
+                else:
+                    head = mid + 1
+        else:
+            pos = "ERROR: List not in order"
+        return "\nIndex of %d: %s" % (target, str(pos))  # Note that the position is returned as a string
+                                                        #To-Do: Edit output types/feedback
+d = dataUtils()
+dataset = d.randata(20, 20, duples=1)
+print(dataset, d.binsearch(d.insort(dataset), 11), "\n---------")
+print(d.selsort(dataset, showstep=1))
