@@ -82,7 +82,7 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
                 if showstep == 1:  # Optional printout of sorting steps
                     print(data)
 
-    # List search methods
+    # List Search Methods
 
     # binary search, DATA MUST BE ORDERED!
     def binsearch(self, data, target):
