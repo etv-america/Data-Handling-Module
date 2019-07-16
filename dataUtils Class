@@ -1,18 +1,18 @@
-class dataUtils: #  PROG To-Do List: - add docstrings to methods,
-                    # - replace error string returns with 0 returns and prints
+class dataUtils:  #  Note that OSP = Optional Step Printout, shows where sorting steps can be output
 
-    #  Misc Internal Methods
+        #  *Misc/Internal Methods
 
-    #  check if a data set is in order
-    def isordered(self, data):
+    def isOrdered(self, data):
+        """Takes any dataset and tests if it is in order, returns Bool"""
         ordered = 1
         for i in range(1, len(data)):
             if data[i] < data[i - 1]:
                 ordered = 0
         return ordered
 
-    #  swaps two arguments given; To-Do: EXPAND/FIT TO SIMPLIFY METHODS
-    def listswap(self, data, fir, sec):
+    def list_swap(self, data, fir, sec):
+        """Takes a list and two position arguments,waps the values at the two positions, and
+        returns the new list, error message if indices given are out of bounds"""
         if fir < len(data) and sec < len(data):
             temp = data[fir]
             data[fir] = data[sec]
@@ -21,86 +21,87 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
             print("Swap index out of bounds")
         return data
 
-    #gives the number of layers deep the deepest list in a nest list is
-    def maxdepth(self, nestedlist):
+    def max_depth(self, nestedlist):
+        """Takes any list as input and outputs the number of nestings needed to reach the deepest layer"""
         if isinstance(nestedlist, list):
             if (len(nestedlist) == 0):
                 depth = 1
             else:
-                depth = 1 + max([self.maxdepth(l) for l in nestedlist])
+                depth = 1 + max([self.max_depth(l) for l in nestedlist])
         else:
             depth = 0
         return depth
 
-    #  Randomizing Methods
+        #  *Randomizing Methods
 
-    #  create random test data list of arbitrary size
     def randata(self, length, max, duples=1):
+        """Takes a length and a maximum value and returns a random data list of the given length with values
+         between 0 and the maximum, optional 'duples' argument to turn off duplicate datapoints (default 1)"""
         import random
         if duples == 1:
             randlist = [random.randrange(max) for i in range(length)]
         elif duples == 0:
             if length > max:
                 randlist = [0]
-                print("ERROR: cannot have unique distribution longer than range;\n" \
+                print("ERROR: cannot have unique distribution longer than range;\n" 
                       "Can either decrease length or increase max")
             else:
                 randlist = random.sample(range(0,max), length)
         return randlist
 
-    #  shuffles a given data set
     def shuffle(self, data):
+        """Takes a data list and shuffles it"""
         import random
         return random.sample(data, len(data))
 
-    # List Sort Methods
+        # *List Sort Methods
 
-    #  Selection Sorting
-    def selsort(self, data, showstep=0):
+    def selSort(self, data, showstep=0):
+        """Selection Sort, takes a list and an optional argument to show sorting steps"""
         for cycle in range(len(data)):
             for i in range(cycle, len(data)):
                 if data[cycle] > data[i]:
-                    data = self.listswap(data, cycle, i)
-                    if showstep == 1:
+                    data = self.list_swap(data, cycle, i)
+                    if showstep == 1:   #  OSP
                         print(data)
         return data
 
-    #  Insertion Sorting
-    def insort(self, data, showstep=0):
+    def inSort(self, data, showstep=0):
+        """Insertion Sort, takes a list and an optional argument to show sorting steps"""
         insorted = []
         for i in data:
             insorted.append(i)
             pos = len(insorted) - 1
-            if showstep == 1:
+            if showstep == 1:   #  OSP
                 print(insorted)
             while insorted[pos - 1] > insorted[pos] and pos > 0:
-                insorted = self.listswap(insorted, pos, pos-1)
+                insorted = self.list_swap(insorted, pos, pos-1)
                 pos -= 1
-                if showstep == 1:
+                if showstep == 1:   #  OSP2
                     print(insorted)
         return insorted
 
-    #  Bubble Sorting
-    def bubblesort(self, data, showstep=0):
+    def bubbleSort(self, data, showstep=0):
+        """Bubble Sort, takes a list and an optional argument to show sorting steps"""
         while 1:
-            ordrd = self.isordered(data)  #  checks data ordering
+            ordrd = self.isOrdered(data)
             if ordrd == 1:
                 return data
             else:
                 for i in range(len(data) - 1):
                     if data[i] > data[i + 1]:
-                        data = self.listswap(data,i,i+1)
-                if showstep == 1:  # Optional printout of sorting steps
+                        data = self.list_swap(data,i,i+1)
+                if showstep == 1:  # OSP
                     print(data)
 
-    #  Merge Sorting
-    def mergesort(self, data, showstep=0):
+    def mergeSort(self, data, showstep=0):
+        """Merge Sort, takes a list and an optional argument to show sorting steps"""
         show = showstep
         if len(data) > 1:
             midp = (len(data) // 2)
             left, right = data[:midp], data[midp:]
-            left1, right1 = self.mergesort(left, showstep=show), self.mergesort(right, showstep=show)
-            if show == 1:
+            left1, right1 = self.mergeSort(left, showstep=show), self.mergeSort(right, showstep=show)
+            if show == 1:   #  OSP
                 print(left1, right1)
             # List Merge procedure below, separate for legibility
             result = []
@@ -114,35 +115,40 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
                     i += 1
             result += left1[i:]
             result += right1[j:]
-            # end of joining
+            # end of List Merge
         else:
             result = data
         return result
 
-    # List search methods
+        #  *List Search methods
 
-    # binary search, DATA MUST BE ORDERED!
-    def binsearch(self, data, target):
+    def binSearch(self, data, target):
+        """Binary Data Search, takes an ***ORDERED*** dataset and a target value, searches binarily for value in list,
+        returns position of value in list or 'None' if value is not present, along with corresponging printouts"""
         pos = len(data) + 1
-        if self.isordered(data) == 1:  # check data ordering
+        if self.isOrdered(data) == 1:
             head, tail = 0, len(data) - 1
-            while pos == len(data) + 1:  # searchbound adjustment logic
+            # searchbound adjustment logic
+            while pos == len(data) + 1:
                 mid = (head + tail) // 2
                 if data[mid] == target:
                     pos = mid
                 elif (tail <= head) and (pos == len(data) + 1):
-                    pos = "Not in list"
+                    pos = -1            #  Error Message 1
+                    print("Not in list")
                 elif data[mid] > target:
                     tail = mid - 1
                 else:
                     head = mid + 1
+            #  end search AL
         else:
-            pos = "ERROR: List not in order"
-        return "\nIndex of %d: %s" % (target, str(pos))  # Note that the position is returned as a string
-                                                        #To-Do: Edit output types/feedback
+            pos = -1            #  Error Message 2
+            print("ERROR: List not in order")
+        return "\nIndex of %d: %d" % (target, pos)
 
+#Testing methods
 d = dataUtils()
 dataset = d.randata(20, 20, duples=0)
-#print(dataset, d.binsearch(d.insort(dataset), 11), "\n---------")
-#print(d.maxdepth([1,2]))
-print(d.mergesort(dataset, showstep = 1))
+print(dataset, d.binSearch(d.inSort(dataset), 21), "\n---------")
+print(d.mergeSort(dataset, showstep = 0))
+print(d.list_swap([1,2,3],0,1), d.shuffle([1,2,3]), d.binSearch([1,2,3,4,6,8,9],6))
