@@ -21,6 +21,17 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
             print("Swap index out of bounds")
         return data
 
+    #gives the number of layers deep the deepest list in a nest list is
+    def maxdepth(self, nestedlist):
+        if isinstance(nestedlist, list):
+            if (len(nestedlist) == 0):
+                depth = 1
+            else:
+                depth = 1 + max([self.maxdepth(l) for l in nestedlist])
+        else:
+            depth = 0
+        return depth
+
     #  Randomizing Methods
 
     #  create random test data list of arbitrary size
@@ -44,7 +55,7 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
 
     # List Sort Methods
 
-    #  selection sorting
+    #  Selection Sorting
     def selsort(self, data, showstep=0):
         for cycle in range(len(data)):
             for i in range(cycle, len(data)):
@@ -54,7 +65,7 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
                         print(data)
         return data
 
-    #  insertion sorting
+    #  Insertion Sorting
     def insort(self, data, showstep=0):
         insorted = []
         for i in data:
@@ -69,7 +80,7 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
                     print(insorted)
         return insorted
 
-    #  bubble sorting
+    #  Bubble Sorting
     def bubblesort(self, data, showstep=0):
         while 1:
             ordrd = self.isordered(data)  #  checks data ordering
@@ -82,7 +93,33 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
                 if showstep == 1:  # Optional printout of sorting steps
                     print(data)
 
-    # List Search Methods
+    #  Merge Sorting
+    def mergesort(self, data, showstep=0):
+        show = showstep
+        if len(data) > 1:
+            midp = (len(data) // 2)
+            left, right = data[:midp], data[midp:]
+            left1, right1 = self.mergesort(left, showstep=show), self.mergesort(right, showstep=show)
+            if show == 1:
+                print(left1, right1)
+            # List Merge procedure below, separate for legibility
+            result = []
+            i = j = 0
+            while i < len(left1) and j < len(right1):
+                if left1[i] >= right1[j]:
+                    result.append(right1[j])
+                    j += 1
+                else:
+                    result.append(left1[i])
+                    i += 1
+            result += left1[i:]
+            result += right1[j:]
+            # end of joining
+        else:
+            result = data
+        return result
+
+    # List search methods
 
     # binary search, DATA MUST BE ORDERED!
     def binsearch(self, data, target):
@@ -103,7 +140,9 @@ class dataUtils: #  PROG To-Do List: - add docstrings to methods,
             pos = "ERROR: List not in order"
         return "\nIndex of %d: %s" % (target, str(pos))  # Note that the position is returned as a string
                                                         #To-Do: Edit output types/feedback
+
 d = dataUtils()
-dataset = d.randata(20, 20, duples=1)
-print(dataset, d.binsearch(d.insort(dataset), 11), "\n---------")
-print(d.selsort(dataset, showstep=1))
+dataset = d.randata(20, 20, duples=0)
+#print(dataset, d.binsearch(d.insort(dataset), 11), "\n---------")
+#print(d.maxdepth([1,2]))
+print(d.mergesort(dataset, showstep = 1))
