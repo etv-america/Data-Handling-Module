@@ -1,7 +1,11 @@
 import random
+
+
 class DataUtils:
     #  Note that OSP = Optional Step Printout, shows where sorting steps can be output
-        #  *Misc/Internal Methods
+    #  Starred comments indicate headings of sections of functions
+
+        #  *Misc and Internal Methods
 
     def is_ordered(self, data):
         """Takes any dataset and tests if it is in order, returns Bool"""
@@ -109,11 +113,30 @@ class DataUtils:
             result = data
         return result
 
+    def quicksort(self, data, showstep=0):
+        """Merge Sort, takes a list and an optional argument to show sorting steps and current pivot"""
+        step = showstep
+        if len(data) < 1:
+            return data
+        else:
+            bot, top, pivot = 0, len(data) - 2, len(data) - 1
+            while bot <= top:
+                if data[bot] >= data[pivot]:
+                    data[bot], data[top], data[pivot] = data[top], data[pivot], data[bot]
+                    top, pivot = top - 1, pivot - 1
+                    if showstep == 1:
+                        print(data, "Pivot %d at Position %d" % (data[pivot], pivot))
+                else:
+                    bot += 1
+            data[:pivot] = self.quicksort(data[:pivot], showstep=step)
+            data[pivot + 1:] = self.quicksort(data[pivot + 1:], showstep=step)
+        return data
+
         #  *List Search methods
 
     def binsearch(self, data, target):
         """Binary Data Search, takes an ***ORDERED*** dataset and a target value, searches binarily for the
-         target in the list, returns position of first occurence of that value in list or 'None' if value is
+         target in the list, returns position of first occurrence of that value in list or 'None' if value is
           not present, along with corresponding printouts"""
         pos = len(data) + 1
         if self.is_ordered(data) == 1:
@@ -137,8 +160,8 @@ class DataUtils:
         return "\nIndex of %d: %d" % (target, pos)
 
 
-#Testing methods
+#  Testing methods
 d = DataUtils()
 dataset = d.randata(20, 20, duples=0)
-#print(dataset, d.binsearch(d.insort(dataset), 21), "\n---------")
-print(d.bubblesort(dataset, showstep=1))
+print(dataset, d.binsearch(d.insort(dataset), 21), "\n---------")
+print(d.quicksort(dataset, showstep=1))
