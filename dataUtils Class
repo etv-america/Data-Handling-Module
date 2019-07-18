@@ -1,4 +1,5 @@
 import random
+from collections import Counter
 
 
 class DataUtils:
@@ -26,22 +27,6 @@ class DataUtils:
             depth = 0
         return depth
 
-    def statistics(self, data): #  Implement all further measures, basic version at the moment
-        '''Takes a data set and returns a dictionary of statistical measures'''
-        if self.is_ordered(data) == 0:
-            print("Data Must be Ordered!")
-            return 0
-        else:
-            stats, span = {}, len(data)
-            stats["median"] = (data[span // 2] + data[span // 2 - ((span + 1) % 2)]) / 2
-            #  One-line median calculation for either odd or even datasets
-            stats["minimum"] = min(data)
-            stats["maximum"] = max(data)
-            stats["mean"] = sum(data) / span
-            stats["Standard Deviation"] = (sum([(i - stats["mean"]) ** 2 for i in data]) / (span - 1)) ** 0.5
-            stats["Root Mean Square"] = sum([i ** 2 for i in data]) ** 0.5
-        print(data)
-        return stats
         #  *Randomizing Methods
 
     def randata(self, length, maximum, duples=1):
@@ -148,7 +133,40 @@ class DataUtils:
             data[pivot + 1:] = self.quicksort(data[pivot + 1:], showstep=step)
         return data
 
-        #  *List Search methods
+        #  *Methods for Already Sorted Data (includes List Search methods)
+
+    def statistics(self, data, show_data=0):  #  Expand metrics as needed
+        """Takes a data set and returns a dictionary of statistical measures"""
+        if self.is_ordered(data) == 0:
+            print("Data Must be Ordered!")
+            return 0
+        else:
+            stats, span = {}, len(data)
+            #  One-line median calculation to handle either odd or even datasets
+            stats["median"] = (data[span // 2] + data[span // 2 - ((span + 1) % 2)]) / 2
+            stats["minimum"] = min(data)
+            stats["maximum"] = max(data)
+            stats["Mean"] = sum(data) / span
+            stats["Standard Deviation"] = (sum([(i - stats["Mean"]) ** 2 for i in data]) / (span - 1)) ** 0.5
+            # intermediate calculations and formatting for STDev metrics
+            zscores = [(i - stats["Mean"]) / stats["Standard Deviation"] for i in data]
+            var_cnts = Counter([1 + int(abs(i)) for i in zscores])
+            dev_ct = lambda ct: sum(var_cnts[i] for i in range(ct + 1)) / span
+            stats["Within 1 deviation"] = dev_ct(1)
+            stats["Within 2 deviations"] = dev_ct(2)
+            stats["Within 3 deviations"] = dev_ct(3)
+            #  Other Measure (to be expanded)
+            stats["Root Mean Square"] = sum([i ** 2 for i in data]) ** 0.5
+        if show_data == 1:
+            print("Data: ", data)
+        return stats
+
+    def print_stats(self, data, show_data=0): #helper method for printing stats
+        """Takes a data set and prints statistics in a more human-readable way"""
+        stat = self.statistics(data, show_data)
+        for i in stat:
+            print(i, ":", stat[i])
+        return ""
 
     def binsearch(self, data, target):
         """Binary Data Search, takes an ***ORDERED*** dataset and a target value, searches binarily for the
@@ -178,6 +196,6 @@ class DataUtils:
 
 #  Testing methods
 d = DataUtils()
-dataset = d.randata(20, 20, duples=0)
-print(dataset, d.binsearch(d.insort(dataset), 21), "\n---------")
-print(d.quicksort(dataset, showstep=1))
+dataset = d.randata(20, 20, duples=1)
+print(d.quicksort(dataset, showstep=0), "\n~~~~~~~~~~~")
+print(d.print_stats(d.mergesort(dataset), show_data=0))
