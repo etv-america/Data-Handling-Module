@@ -1,201 +1,203 @@
 import random
 from collections import Counter
+#  Note that OSP = Optional Step Printout, shows where sorting steps can be output
+#  Starred (*) comments indicate headings of sections of functions, are extra indented
 
 
-class DataUtils:
-    #  Note that OSP = Optional Step Printout, shows where sorting steps can be output
-    #  Starred (*) comments indicate headings of sections of functions, are extra indented
+#  *Misc and Internal Methods
 
-        #  *Misc and Internal Methods
+def is_ordered(data):
+    """Takes any dataset and tests if it is in order, returns Bool"""
+    ordered = 1
+    for i in range(1, len(data)):
+        if data[i] < data[i - 1]:
+            ordered = 0
+    return ordered
 
-    def is_ordered(self, data):
-        """Takes any dataset and tests if it is in order, returns Bool"""
-        ordered = 1
-        for i in range(1, len(data)):
-            if data[i] < data[i - 1]:
-                ordered = 0
-        return ordered
 
-    def max_depth(self, nestedlist):
-        """Takes any list as input and outputs the number of nestings needed to reach the deepest layer"""
-        if isinstance(nestedlist, list):
-            if len(nestedlist) == 0:
-                depth = 1
-            else:
-                depth = 1 + max([self.max_depth(l) for l in nestedlist])
+def get_max_depth(nestedlist):
+    """Takes any list as input and outputs the number of nestings needed to reach the deepest layer"""
+    if isinstance(nestedlist, list):
+        if len(nestedlist) == 0:
+            depth = 1
         else:
-            depth = 0
-        return depth
+            depth = 1 + max([get_max_depth(l) for l in nestedlist])
+    else:
+        depth = 0
+    return depth
 
-        #  *Randomizing Methods
 
-    def randata(self, length, maximum, duples=1):
-        """Takes a length and a maximum value and returns a random data list of the given length with values
-         between 0 and the maximum, optional 'duples' argument to turn off duplicate datapoints (default 1)"""
-        randlist = []
-        if duples == 1:
-            randlist = [random.randrange(maximum) for i in range(length)]
-        elif duples == 0:
-            if length > maximum:
-                randlist = [0]
-                print("ERROR: cannot have unique distribution longer than range;\n" 
-                      "Can either decrease length or increase max")
-            else:
-                randlist = random.sample(range(0, maximum), length)
-        return randlist
+ #  *Randomizing Methods
 
-    def shuffle(self, data):
-        """Takes a data list and shuffles it"""
-        return random.sample(data, len(data))
+def randata(length, maximum, duples=1):
+    """Takes a length and a maximum value and returns a random data list of the given length with values
+     between 0 and the maximum, optional 'duples' argument to turn off duplicate datapoints (default 1)"""
+    randlist = []
+    if duples == 1:
+        randlist = [random.randrange(maximum) for i in range(length)]
+    elif duples == 0:
+        if length > maximum:
+            randlist = [0]
+            print("ERROR: cannot have unique distribution longer than range;\n" 
+                  "Can either decrease length or increase max")
+        else:
+            randlist = random.sample(range(0, maximum), length)
+    return randlist
 
-        # *List Sort Methods
 
-    def selsort(self, data, showstep=0):
-        """Selection Sort, takes a list and an optional argument to show sorting steps"""
-        for cycle in range(len(data)):
-            for i in range(cycle, len(data)):
-                if data[cycle] > data[i]:
-                    data[cycle], data[i] = data[i], data[cycle]
-                    if showstep == 1:   #  OSP
-                        print(data)
-        return data
+def shuffle(data):
+    """Takes a data list and shuffles it"""
+    return random.sample(data, len(data))
 
-    def insort(self, data, showstep=0):
-        """Insertion Sort, takes a list and an optional argument to show sorting steps"""
-        insorted = []
-        for i in data:
-            insorted.append(i)
-            pos = len(insorted) - 1
-            if showstep == 1:   #  OSP
-                print(insorted)
-            while insorted[pos - 1] > insorted[pos] and pos > 0:
-                insorted[pos], insorted[pos-1] = insorted[pos-1], insorted[pos]
-                pos -= 1
-                if showstep == 1:   #  OSP2
-                    print(insorted, "Currently Inserting:", i)
-        return insorted
 
-    def bubblesort(self, data, showstep=0):
-        """Bubble Sort, takes a list and an optional argument to show sorting steps"""
-        while 1:
-            ordrd = self.is_ordered(data)
-            if ordrd == 1:
-                return data
-            else:
-                for i in range(len(data) - 1):
-                    if data[i] > data[i + 1]:
-                        data[i], data[i+1] = data[i+1], data[i]
-                if showstep == 1:  # OSP
+# *List Sort Methods
+
+def selsort(data, showstep=0):
+    """Selection Sort, takes a list and an optional argument to show sorting steps"""
+    for cycle in range(len(data)):
+        for i in range(cycle, len(data)):
+            if data[cycle] > data[i]:
+                data[cycle], data[i] = data[i], data[cycle]
+                if showstep == 1:   #  OSP
                     print(data)
+    return data
 
-    def mergesort(self, data, showstep=0):
-        """Merge Sort, takes a list and an optional argument to show sorting steps"""
-        show = showstep
-        if len(data) > 1:
-            midp = (len(data) // 2)
-            left, right = data[:midp], data[midp:]
-            left1, right1 = self.mergesort(left, showstep=show), self.mergesort(right, showstep=show)
-            if show == 1:   #  OSP
-                print(left1, right1)
-            # List Merge procedure below, separate for legibility
-            result = []
-            i = j = 0
-            while i < len(left1) and j < len(right1):
-                if left1[i] >= right1[j]:
-                    result.append(right1[j])
-                    j += 1
-                else:
-                    result.append(left1[i])
-                    i += 1
-            result += left1[i:]
-            result += right1[j:]
-            # end of List Merge
-        else:
-            result = data
-        return result
 
-    def quicksort(self, data, showstep=0):
-        """Merge Sort, takes a list and an optional argument to show sorting steps and current pivot"""
-        step = showstep
-        if len(data) < 1:
+def insort(data, showstep=0):
+    """Insertion Sort, takes a list and an optional argument to show sorting steps"""
+    insorted = []
+    for i in data:
+        insorted.append(i)
+        pos = len(insorted) - 1
+        if showstep == 1:   #  OSP
+            print(insorted)
+        while insorted[pos - 1] > insorted[pos] and pos > 0:
+            insorted[pos], insorted[pos-1] = insorted[pos-1], insorted[pos]
+            pos -= 1
+            if showstep == 1:   #  OSP2
+                print(insorted, "Currently Inserting:", i)
+    return insorted
+
+
+def bubblesort(data, showstep=0):
+    """Bubble Sort, takes a list and an optional argument to show sorting steps"""
+    while 1:
+        ordrd = is_ordered(data)
+        if ordrd == 1:
             return data
         else:
-            bot, top, pivot = 0, len(data) - 2, len(data) - 1
-            while bot <= top:
-                if data[bot] >= data[pivot]:
-                    data[bot], data[top], data[pivot] = data[top], data[pivot], data[bot]
-                    top, pivot = top - 1, pivot - 1
-                    if showstep == 1:
-                        print(data, "Pivot %d at Position %d" % (data[pivot], pivot))   #  OSP
-                else:
-                    bot += 1
-            data[:pivot] = self.quicksort(data[:pivot], showstep=step)
-            data[pivot + 1:] = self.quicksort(data[pivot + 1:], showstep=step)
+            for i in range(len(data) - 1):
+                if data[i] > data[i + 1]:
+                    data[i], data[i+1] = data[i+1], data[i]
+            if showstep == 1:  # OSP
+                print(data)
+
+
+def mergesort(data, showstep=0):
+    """Merge Sort, takes a list and an optional argument to show sorting steps"""
+    show = showstep
+    if len(data) > 1:
+        midp = (len(data) // 2)
+        left, right = data[:midp], data[midp:]
+        left1, right1 = mergesort(left, showstep=show), mergesort(right, showstep=show)
+        if show == 1:   #  OSP
+            print(left1, right1)
+        # List Merge procedure below, separate for legibility
+        result = []
+        i = j = 0
+        while i < len(left1) and j < len(right1):
+            if left1[i] >= right1[j]:
+                result.append(right1[j])
+                j += 1
+            else:
+                result.append(left1[i])
+                i += 1
+        result += left1[i:]
+        result += right1[j:]
+        # end of List Merge
+    else:
+        result = data
+    return result
+
+
+def quicksort(data, showstep=0):
+    """Merge Sort, takes a list and an optional argument to show sorting steps and current pivot"""
+    step = showstep
+    if len(data) < 1:
         return data
-
-        #  *Methods for Already Sorted Data (includes List Search methods)
-
-    def statistics(self, data, show_data=0):  #  Expand metrics as needed
-        """Takes a data set and returns a dictionary of statistical measures"""
-        if self.is_ordered(data) == 0:
-            print("Data Must be Ordered!")
-            return 0
-        else:
-            stats, span = {}, len(data)
-            #  One-line median calculation to handle either odd or even datasets
-            stats["median"] = (data[span // 2] + data[span // 2 - ((span + 1) % 2)]) / 2
-            stats["minimum"] = min(data)
-            stats["maximum"] = max(data)
-            stats["Mean"] = sum(data) / span
-            stats["Standard Deviation"] = (sum([(i - stats["Mean"]) ** 2 for i in data]) / (span - 1)) ** 0.5
-            # intermediate calculations and formatting for STDev metrics
-            zscores = [(i - stats["Mean"]) / stats["Standard Deviation"] for i in data]
-            var_cnts = Counter([1 + int(abs(i)) for i in zscores])
-            dev_ct = lambda ct: sum(var_cnts[i] for i in range(ct + 1)) / span
-            stats["Within 1 deviation"] = dev_ct(1)
-            stats["Within 2 deviations"] = dev_ct(2)
-            stats["Within 3 deviations"] = dev_ct(3)
-            #  Other Measure (to be expanded)
-            stats["Root Mean Square"] = sum([i ** 2 for i in data]) ** 0.5
-        if show_data == 1:
-            print("Data: ", data)
-        return stats
-
-    def print_stats(self, data, show_data=0): #helper method for printing stats
-        """Takes a data set and prints statistics in a more human-readable way"""
-        stat = self.statistics(data, show_data)
-        for i in stat:
-            print(i, ":", stat[i])
-        return ""
-
-    def binsearch(self, data, target):
-        """Binary Data Search, takes an ***ORDERED*** dataset and a target value, searches binarily for the
-         target in the list, returns position of first occurrence of that value in list or 'None' if value is
-          not present, along with corresponding printouts"""
-        pos = len(data) + 1
-        if self.is_ordered(data) == 1:
-            head, tail = 0, len(data) - 1
-            # searchbound adjustment logic
-            while pos == len(data) + 1:
-                mid = (head + tail) // 2
-                if data[mid] == target:
-                    pos = mid
-                elif (tail <= head) and (pos == len(data) + 1):
-                    pos = -1            #  Error Message 1
-                    print("Not in list")
-                elif data[mid] > target:
-                    tail = mid - 1
-                else:
-                    head = mid + 1
-            #  end search AL
-        else:
-            pos = -1            #  Error Message 2
-            print("ERROR: List not in order")
-        return "\nIndex of %d: %d" % (target, pos)
+    else:
+        bot, top, pivot = 0, len(data) - 2, len(data) - 1
+        while bot <= top:
+            if data[bot] >= data[pivot]:
+                data[bot], data[top], data[pivot] = data[top], data[pivot], data[bot]
+                top, pivot = top - 1, pivot - 1
+                if showstep == 1:
+                    print(data, "Pivot %d at Position %d" % (data[pivot], pivot))   #  OSP
+            else:
+                bot += 1
+        data[:pivot] = quicksort(data[:pivot], showstep=step)
+        data[pivot + 1:] = quicksort(data[pivot + 1:], showstep=step)
+    return data
 
 
-#  Testing methods
-d = DataUtils()
-dataset = d.randata(20, 20, duples=1)
-print(d.quicksort(dataset, showstep=0), "\n~~~~~~~~~~~")
-print(d.print_stats(d.mergesort(dataset), show_data=0))
+#  *Methods for Already Sorted Data (includes List Search methods)
+
+def statistics(data, show_data=0):  #  Expand metrics as needed
+    """Takes a data set and returns a dictionary of statistical measures"""
+    if is_ordered(data) == 0:
+        print("Data Must be Ordered!")
+        return 0
+    else:
+        stats, span = {}, len(data)
+        #  One-line median calculation to handle either odd or even datasets
+        stats["median"] = (data[span // 2] + data[span // 2 - ((span + 1) % 2)]) / 2
+        stats["minimum"] = min(data)
+        stats["maximum"] = max(data)
+        stats["Mean"] = sum(data) / span
+        stats["Standard Deviation"] = (sum([(i - stats["Mean"]) ** 2 for i in data]) / (span - 1)) ** 0.5
+        # intermediate calculations and formatting for STDev metrics
+        zscores = [(i - stats["Mean"]) / stats["Standard Deviation"] for i in data]
+        var_cnts = Counter([1 + int(abs(i)) for i in zscores])
+        dev_ct = lambda ct: sum(var_cnts[i] for i in range(ct + 1)) / span
+        stats["Within 1 deviation"] = dev_ct(1)
+        stats["Within 2 deviations"] = dev_ct(2)
+        stats["Within 3 deviations"] = dev_ct(3)
+        #  Other Measure (to be expanded)
+        stats["Root Mean Square"] = sum([i ** 2 for i in data]) ** 0.5
+    if show_data == 1:
+        print("Data: ", data)
+    return stats
+
+
+def print_stats(data, show_data=0): #helper method for printing stats
+    """Takes a data set and prints statistics in a more human-readable way"""
+    stat = statistics(data, show_data)
+    for i in stat:
+        print(i, ":", stat[i])
+    return ""
+
+
+def binsearch(data, target):
+    """Binary Data Search, takes an ***ORDERED*** dataset and a target value, searches binarily for the
+     target in the list, returns position of first occurrence of that value in list or 'None' if value is
+      not present, along with corresponding printouts"""
+    pos = len(data) + 1
+    if is_ordered(data) == 1:
+        head, tail = 0, len(data) - 1
+        # searchbound adjustment logic
+        while pos == len(data) + 1:
+            mid = (head + tail) // 2
+            if data[mid] == target:
+                pos = mid
+            elif (tail <= head) and (pos == len(data) + 1):
+                pos = -1            #  Error Message 1
+                print("Not in list")
+            elif data[mid] > target:
+                tail = mid - 1
+            else:
+                head = mid + 1
+        #  end search AL
+    else:
+        pos = -1            #  Error Message 2
+        print("ERROR: List not in order")
+    return "\nIndex of %d: %d" % (target, pos)
