@@ -54,53 +54,62 @@ def shuffle(data):
 
 def selsort(data, showstep=0):
     """Selection Sort, takes a list and an optional argument to show sorting steps"""
+    stepcount = 0
     for cycle in range(len(data)):
         for i in range(cycle, len(data)):
             if data[cycle] > data[i]:
                 data[cycle], data[i] = data[i], data[cycle]
+                stepcount += 1
                 if showstep == 1:   #  OSP
-                    print(data)
+                    print(data, stepcount)
+    if showstep == 1:
+        print("Sorted List: ", data)
+        return "Sorted in %d steps" % stepcount
     return data
 
 
 def insort(data, showstep=0):
     """Insertion Sort, takes a list and an optional argument to show sorting steps"""
-    insorted = []
+    insorted, stepcount = [], 0
     for i in data:
         insorted.append(i)
-        pos = len(insorted) - 1
+        pos, stepcount = len(insorted) - 1, stepcount + 1
         if showstep == 1:   #  OSP
-            print(insorted)
+            print(insorted, "Inserted %d ~~~" % i)
         while insorted[pos - 1] > insorted[pos] and pos > 0:
             insorted[pos], insorted[pos-1] = insorted[pos-1], insorted[pos]
-            pos -= 1
+            pos, stepcount = pos - 1, stepcount + 1
             if showstep == 1:   #  OSP2
-                print(insorted, "Currently Inserting:", i)
+                print(insorted, "Situating %d ..." % i)
+    if showstep == 1:
+        print("Sorted List: ", insorted)
+        return "Sorted in %d steps" % stepcount
     return insorted
 
 
 def bubblesort(data, showstep=0):
     """Bubble Sort, takes a list and an optional argument to show sorting steps"""
-    while 1:
-        ordrd = is_ordered(data)
-        if ordrd == 1:
-            return data
-        else:
-            for i in range(len(data) - 1):
-                if data[i] > data[i + 1]:
-                    data[i], data[i+1] = data[i+1], data[i]
-            if showstep == 1:  # OSP
-                print(data)
+    stepcount = 0
+    while is_ordered(data) == 0:
+        for i in range(len(data) - 1):
+            if data[i] > data[i + 1]:
+                data[i], data[i+1] = data[i+1], data[i]
+        stepcount += 1
+        if showstep == 1:
+            print(data)
+    if showstep == 1:  # OSP
+        print("Sorted List: ", data)
+        return "Sorted in %d steps" % stepcount
+    return data
 
 
-def mergesort(data, showstep=0):
+def mergesort(data, showstep=0, stepcount=0):
     """Merge Sort, takes a list and an optional argument to show sorting steps"""
-    show = showstep
     if len(data) > 1:
         midp = (len(data) // 2)
         left, right = data[:midp], data[midp:]
-        left1, right1 = mergesort(left, showstep=show), mergesort(right, showstep=show)
-        if show == 1:   #  OSP
+        left1, right1 = mergesort(left, showstep=showstep), mergesort(right, showstep=showstep)
+        if showstep == 1:   #  OSP
             print(left1, right1)
         # List Merge procedure below, separate for legibility
         result = []
@@ -120,9 +129,8 @@ def mergesort(data, showstep=0):
     return result
 
 
-def quicksort(data, showstep=0):
-    """Merge Sort, takes a list and an optional argument to show sorting steps and current pivot"""
-    step = showstep
+def quicksort(data, showstep=0, stepcount=0):
+    """Quick Sort, takes a list and an optional argument to show sorting steps and current pivot"""
     if len(data) < 1:
         return data
     else:
@@ -135,8 +143,8 @@ def quicksort(data, showstep=0):
                     print(data, "Pivot %d at Position %d" % (data[pivot], pivot))   #  OSP
             else:
                 bot += 1
-        data[:pivot] = quicksort(data[:pivot], showstep=step)
-        data[pivot + 1:] = quicksort(data[pivot + 1:], showstep=step)
+        data[:pivot] = quicksort(data[:pivot], showstep=showstep)
+        data[pivot + 1:] = quicksort(data[pivot + 1:], showstep=showstep)
     return data
 
 
@@ -153,6 +161,7 @@ def statistics(data, show_data=0):  #  Expand metrics as needed
         stats["median"] = (data[span // 2] + data[span // 2 - ((span + 1) % 2)]) / 2
         stats["minimum"] = min(data)
         stats["maximum"] = max(data)
+        stats["mode"] = max(data, key=data.count)
         stats["Mean"] = sum(data) / span
         stats["Standard Deviation"] = (sum([(i - stats["Mean"]) ** 2 for i in data]) / (span - 1)) ** 0.5
         # intermediate calculations and formatting for STDev metrics
@@ -162,7 +171,7 @@ def statistics(data, show_data=0):  #  Expand metrics as needed
         stats["Within 1 deviation"] = dev_ct(1)
         stats["Within 2 deviations"] = dev_ct(2)
         stats["Within 3 deviations"] = dev_ct(3)
-        #  Other Measure (to be expanded)
+        #  Other Measures (to be expanded)
         stats["Root Mean Square"] = sum([i ** 2 for i in data]) ** 0.5
     if show_data == 1:
         print("Data: ", data)
@@ -172,9 +181,11 @@ def statistics(data, show_data=0):  #  Expand metrics as needed
 def print_stats(data, show_data=0): #helper method for printing stats
     """Takes a data set and prints statistics in a more human-readable way"""
     stat = statistics(data, show_data)
-    for i in stat:
-        print(i, ":", stat[i])
-    return ""
+    try:
+        for i in stat:
+            print(i, ":", stat[i])
+    except:
+        return ""
 
 
 def binsearch(data, target):
